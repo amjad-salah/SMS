@@ -71,7 +71,8 @@ public class AcademicYearsService(
 
         return new AcademicYearsResponseDto()
         {
-            Success = true, AcademicYear = newYear.Adapt<AcademicYearDetailsDto>(),
+            Success = true,
+            AcademicYear = newYear.Adapt<AcademicYearDetailsDto>(),
             Message = "Year added successfully!"
         };
     }

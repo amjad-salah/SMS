@@ -31,7 +31,7 @@ public class AnnouncementsService(
 
         if (announcement != null)
             return new AnnouncementResponseDto()
-                { Success = true, Announcement = announcement.Adapt<AnnouncementDto>() };
+            { Success = true, Announcement = announcement.Adapt<AnnouncementDto>() };
 
         Log.Error("Announcement with id {Id} not found", id);
         return new AnnouncementResponseDto() { Success = false, Message = "Announcement not found" };
