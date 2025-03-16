@@ -1,10 +1,9 @@
-using System;
 using Microsoft.EntityFrameworkCore;
 using SMS.Models.Entities;
 
 namespace SMS.Backend.Data;
 
-public class AppDbContext : DbContext
+public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
     public override int SaveChanges(bool acceptAllChangesOnSuccess)
     {

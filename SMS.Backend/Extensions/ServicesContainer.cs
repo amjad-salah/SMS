@@ -1,7 +1,31 @@
-using System;
+using System.Text;
 using FluentValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using SMS.Backend.Data;
+using SMS.Backend.Services.AcademicYears;
+using SMS.Backend.Services.Announcements;
+using SMS.Backend.Services.Applications;
+using SMS.Backend.Services.Assignments;
+using SMS.Backend.Services.Attendances;
+using SMS.Backend.Services.Classes;
+using SMS.Backend.Services.Dashboard;
+using SMS.Backend.Services.ExamResults;
+using SMS.Backend.Services.Exams;
+using SMS.Backend.Services.ExamTypes;
+using SMS.Backend.Services.Fees;
+using SMS.Backend.Services.Grades;
+using SMS.Backend.Services.Institutions;
+using SMS.Backend.Services.Invoices;
+using SMS.Backend.Services.Lessons;
+using SMS.Backend.Services.Parents;
+using SMS.Backend.Services.StudentRecords;
+using SMS.Backend.Services.Students;
+using SMS.Backend.Services.Subjects;
+using SMS.Backend.Services.Teachers;
+using SMS.Backend.Services.Users;
+using SMS.Backend.Utils;
 using SMS.Backend.Validations.AcademicYears;
 using SMS.Backend.Validations.Announcements;
 using SMS.Backend.Validations.Applications;
@@ -58,6 +82,30 @@ public static class ServicesContainer
             options.UseNpgsql(configuration.GetConnectionString("Default"));
         });
 
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        }).AddJwtBearer(cfg =>
+        {
+            cfg.TokenValidationParameters = new TokenValidationParameters()
+            {
+                ValidateIssuerSigningKey = true,
+                ValidateAudience = true,
+                ValidateIssuer = true,
+                ValidateLifetime = true,
+                ValidAudience = configuration["Jwt:Audience"],
+                ValidIssuer = configuration["Jwt:Issuer"],
+                IssuerSigningKey = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!))
+            };
+        });
+
+        services.AddAuthorization();
+
+        services.AddExceptionHandler<AppExceptionHandler>();
+        services.AddSingleton<AuthUtils>();
+
         #region Validations
 
         services.AddScoped<IValidator<AddUserDto>, AddUserValidation>();
@@ -86,6 +134,32 @@ public static class ServicesContainer
         services.AddScoped<IValidator<UpsertStudentDto>, UpsertStudentValidation>();
         services.AddScoped<IValidator<UpsertSubjectDto>, UpsertSubjectValidation>();
         services.AddScoped<IValidator<UpsertTeacherDto>, UpsertTeacherValidation>();
+
+        #endregion
+
+        #region Services
+
+        services.AddScoped<IUsersService, UsersService>();
+        services.AddScoped<IInstitutionService, InstitutionService>();
+        services.AddScoped<IAcademicYearsService, AcademicYearsService>();
+        services.AddScoped<IAnnouncementsService, AnnouncementsService>();
+        services.AddScoped<IApplicationsService, ApplicationsService>();
+        services.AddScoped<IAssignmentsService, AssignmentsService>();
+        services.AddScoped<IAttendancesService, AttendancesService>();
+        services.AddScoped<IClassesService, ClassesService>();
+        services.AddScoped<IExamResultsService, ExamResultsService>();
+        services.AddScoped<IExamsService, ExamsService>();
+        services.AddScoped<IExamTypesService, ExamTypesService>();
+        services.AddScoped<IFeesService, FeesService>();
+        services.AddScoped<IGradesService, GradesService>();
+        services.AddScoped<IInvoicesService, InvoicesService>();
+        services.AddScoped<ILessonsService, LessonsService>();
+        services.AddScoped<IParentsService, ParentsService>();
+        services.AddScoped<IStudentRecordsService, StudentRecordsService>();
+        services.AddScoped<IStudentsService, StudentsService>();
+        services.AddScoped<ISubjectsService, SubjectsService>();
+        services.AddScoped<ITeachersService, TeachersService>();
+        services.AddScoped<IDashboardService, DashboardService>();
 
         #endregion
 
