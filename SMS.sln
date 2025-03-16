@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMS.Backend", "SMS.Backend\SMS.Backend.csproj", "{7CC0975A-DDC7-4F16-9AC0-B5D4F92F0FD2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMS.Frontend", "SMS.Frontend\SMS.Frontend.csproj", "{FD75C75A-BBD9-443E-9205-DED0DD20DB08}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMS.Models", "SMS.Models\SMS.Models.csproj", "{CEC75AB9-E905-4BF6-8C3B-5658605AFE5D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7CC0975A-DDC7-4F16-9AC0-B5D4F92F0FD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CC0975A-DDC7-4F16-9AC0-B5D4F92F0FD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CC0975A-DDC7-4F16-9AC0-B5D4F92F0FD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CC0975A-DDC7-4F16-9AC0-B5D4F92F0FD2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD75C75A-BBD9-443E-9205-DED0DD20DB08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD75C75A-BBD9-443E-9205-DED0DD20DB08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD75C75A-BBD9-443E-9205-DED0DD20DB08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD75C75A-BBD9-443E-9205-DED0DD20DB08}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CEC75AB9-E905-4BF6-8C3B-5658605AFE5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CEC75AB9-E905-4BF6-8C3B-5658605AFE5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CEC75AB9-E905-4BF6-8C3B-5658605AFE5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CEC75AB9-E905-4BF6-8C3B-5658605AFE5D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
