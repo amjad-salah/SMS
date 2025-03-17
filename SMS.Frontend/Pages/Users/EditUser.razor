@@ -1,0 +1,97 @@
+@page "/users/edit/{id:int}"
+@attribute [Authorize(Roles = "Admin")]
+@using SMS.Models.DTOs.Institutions
+@using SMS.Models.DTOs.Users
+@using SMS.Models.Entities
+
+<MudRTLProvider RightToLeft="true">
+    <MudIconButton Icon="@Icons.Material.Filled.ArrowForward" Color="Color.Dark" Href="/users"/>
+    <div class="d-flex justify-content-center align-items-center">
+        <EditForm Model="_model" OnSubmit="@HandleUpdateUser" FormName="addUserForm">
+            <MudCard Style="width: 500px" Class="p-4">
+                <MudCardHeader>
+                    <MudText Typo="Typo.h4">إضافة مستخدم</MudText>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudTextField Label="الإسم باكامل" @bind-Value="_model.FullName" For="@(() => _model.FullName)"
+                                  Class="mb-3"/>
+                    <MudTextField Label="البريد الإلكتروني" @bind-Value="_model.Email" For="@(() => _model.Email)"
+                                  InputType="InputType.Email" Class="mb-3"/>
+                    <MudSelect @bind-Value="_model.InstitutionId" Placeholder="إختر المؤسسة"
+                               Label="المؤسسة" Class="mb-3">
+                        @foreach (var institution in _institutions)
+                        {
+                            <MudSelectItem Value="@institution.Id">@institution.Name</MudSelectItem>
+                        }
+                    </MudSelect>
+                    <MudSelect @bind-Value="_model.Role" Placeholder="إختر الصلاحية"
+                               Label="الصلاحية" Class="mb-3">
+                        @foreach (UserRole role in Enum.GetValues(typeof(UserRole)))
+                        {
+                            <MudSelectItem Value="@role">@role</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Disabled="_isLoading" Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               Class="ms-auto">
+                        @if (_isLoading)
+                        {
+                            <MudProgressCircular Class="ms-1n" Size="Size.Small" Indeterminate="true"
+                                                 Color="Color.Inherit"/>
+                        }
+                        <MudText>حفظ</MudText>
+                    </MudButton>
+                </MudCardActions>
+            </MudCard>
+        </EditForm>
+    </div>
+</MudRTLProvider>
+
+@code
+{
+    [Parameter] public int Id { get; set; }
+    private UpdateUserDto _model = new();
+    private List<InstitutionDto> _institutions = new();
+    private bool _isLoading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var resUser = await ApiClient.GetFromJsonAsync<UsersResponseDto>($"/api/users/{Id}");
+
+        if (resUser is { Success: true })
+            _model = new UpdateUserDto
+            {
+                FullName = resUser.User!.FullName,
+                Email = resUser.User!.Email,
+                InstitutionId = resUser.User!.InstitutionId,
+                Role = resUser.User!.Role
+            };
+
+        var res = await ApiClient.GetFromJsonAsync<InstitutionsResponseDto>("/api/Institutions");
+
+        if (res is { Success: true, Institutions: not null }) _institutions = res.Institutions;
+    }
+
+    private async Task HandleUpdateUser()
+    {
+        _isLoading = true;
+
+        var res = await ApiClient.PutAsync<UsersResponseDto,
+            UpdateUserDto>($"api/users/{Id}", _model);
+
+        if (res is { Success: true })
+        {
+            Snackbar.Add(res.Message!, Severity.Info);
+            _isLoading = false;
+            NavManager.NavigateTo("/users");
+        }
+        else
+        {
+            Snackbar.Add(res?.Message!, Severity.Error);
+        }
+
+        _isLoading = false;
+    }
+}

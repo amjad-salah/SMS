@@ -1,0 +1,12 @@
+@page "/logout"
+@using SMS.Frontend.Authentication
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ((AuthStateProvider)AuthStateProvider).ClearCredentials();
+        NavManager.NavigateTo("/login");
+    }
+
+}

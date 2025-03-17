@@ -1,0 +1,127 @@
+@page "/users"
+@attribute [Authorize(Roles = "Admin")]
+@using SMS.Models.DTOs.Users
+
+@if (_isLoading)
+{
+    <div class="d-flex justify-content-center align-items-center">
+        <MudProgressCircular Size="Size.Medium" Indeterminate="true"/>
+    </div>
+}
+else if (_users != null)
+{
+    <MudRTLProvider RightToLeft="true">
+        <MudFab Size="Size.Medium" StartIcon="@Icons.Material.Filled.Add"
+                Class="mb-10"
+                @onclick="@(() => NavManager.NavigateTo($"users/add"))"
+                Color="Color.Dark"/>
+        <MudTable Items="@_users" Dense Hover Filter="new Func<UserDto, bool>(FilterFunc1)" Elevation="4">
+            <ToolBarContent>
+                <MudText Typo="Typo.h4">المستخدمين</MudText>
+                <MudSpacer/>
+                <MudTextField @bind-Value="_searchText" Placeholder="بحث بالإسم أو البريد الإلكتروني..."
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium"
+                              Class="mt-0"></MudTextField>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<UserDto, object>(x => x.Email)">
+                        البريد الإلكتروني
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<UserDto, object>(x => x.FullName)">
+                        الإسم
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>المؤسسة</MudTh>
+                <MudTh>الصلاحية</MudTh>
+                <MudTh></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.Email</MudTd>
+                <MudTd>@context.FullName</MudTd>
+                <MudTd>@context.Institution?.Name</MudTd>
+                <MudTd>@Enum.GetName(context.Role.GetType(), context.Role)</MudTd>
+                <MudTd>
+                    <MudFab Size="Size.Small" StartIcon="@Icons.Material.Filled.Edit"
+                            Class="me-1"
+                            @onclick="@(() => NavManager.NavigateTo($"users/edit/{context.Id}"))"
+                            Color="Color.Primary"/>
+                    <MudFab Size="Size.Small" StartIcon="@Icons.Material.Filled.Password"
+                            Class="me-1"
+                            @onclick="@(() => NavManager.NavigateTo($"users/reset/{context.Id}"))"
+                            Color="Color.Default"/>
+                    <MudFab Size="Size.Small" StartIcon="@Icons.Material.Filled.Delete"
+                            Class="me-1"
+                            @onclick="@(() => HandleDeleteUser(context.Id))"
+                            Color="Color.Error"/>
+                </MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager/>
+            </PagerContent>
+        </MudTable>
+    </MudRTLProvider>
+}
+else if (_users == null && !string.IsNullOrEmpty(_errorMessage))
+{
+    <MudRTLProvider RightToLeft="true">
+        <MudAlert Severity="Severity.Error" Variant="Variant.Outlined">
+            @_errorMessage
+        </MudAlert>
+    </MudRTLProvider>
+}
+
+@code
+{
+    private List<UserDto>? _users;
+    private bool _isLoading = false;
+    private string _errorMessage = "";
+    private string _searchText = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        _isLoading = true;
+
+        var res = await ApiClient.GetFromJsonAsync<UsersResponseDto>("api/users");
+
+        if (res is { Success: true })
+            _users = res.Users;
+        else
+            _errorMessage = res?.Message!;
+
+        _isLoading = false;
+    }
+
+    private bool FilterFunc1(UserDto element)
+    {
+        return FilterFunc(element, _searchText);
+    }
+
+    private bool FilterFunc(UserDto element, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (element.FullName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (element.Email.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    }
+
+    private async Task HandleDeleteUser(int id)
+    {
+        var res = await ApiClient.DeleteAsync<UsersResponseDto>($"api/users/{id}");
+
+        if (res is { Success: true })
+        {
+            Snackbar.Add(res.Message!, Severity.Success);
+            NavManager.Refresh(true);
+        }
+    }
+}
+
+@* TODO: Convert delete to link to page *@

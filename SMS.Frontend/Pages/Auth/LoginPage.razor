@@ -1,6 +1,64 @@
 @page "/login"
-<h3>LoginPage</h3>
+@using SMS.Frontend.Authentication
+@using SMS.Models.DTOs.Users
+@attribute [AllowAnonymous]
+
+<MudRTLProvider RightToLeft="true">
+    <div class="d-flex justify-content-center align-items-center">
+        <EditForm Model="_model" OnSubmit="@HandleLogin" FormName="loginForm">
+            <MudCard Style="width: 450px" Class="p-4">
+                <MudCardHeader>
+                    <MudText Typo="Typo.h6">تسجيل الدخول</MudText>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudTextField Label="البريد الإلكتروني" @bind-Value="_model.Email" For="@(() => _model.Email)"
+                                  InputType="InputType.Email"/>
+                    <MudTextField Label="كلمة المرور" @bind-Value="_model.Password" For="@(() => _model.Email)"
+                                  InputType="InputType.Password" Class="mt-5"/>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Disabled="_isLoading" Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               Class="ms-auto">
+                        @if (_isLoading)
+                        {
+                            <MudProgressCircular Class="ms-2" Size="Size.Small" Indeterminate="true"
+                                                 Color="Color.Inherit"/>
+                        }
+                        <MudText>دخول</MudText>
+                    </MudButton>
+                </MudCardActions>
+            </MudCard>
+        </EditForm>
+    </div>
+</MudRTLProvider>
 
 @code {
-    
+    private LoginRequestDto _model = new();
+    private bool _isLoading = false;
+
+    private async Task HandleLogin()
+    {
+        _isLoading = true;
+
+        var res = await ApiClient.PostAsync<LoginResponseDto, LoginRequestDto>
+            ("/api/users/login", _model);
+
+        if (res is { Success: true })
+        {
+            await ((AuthStateProvider)AuthStateProvider).SetCredentials(res.Token!);
+            _isLoading = false;
+            NavManager.NavigateTo("/");
+        }
+        else
+        {
+            if (res?.Message != null)
+            {
+                Snackbar.Add(res.Message!, Severity.Error);
+                _isLoading = false;
+            }
+        }
+
+        _isLoading = false;
+    }
 }

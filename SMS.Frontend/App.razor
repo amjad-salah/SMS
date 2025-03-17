@@ -12,7 +12,12 @@
     <NotFound>
         <PageTitle>Not found</PageTitle>
         <LayoutView Layout="@typeof(MainLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
+            <MudRTLProvider RightToLeft="true">
+                <MudAlert Variant="Variant.Outlined">
+                    عذراً، الصفحة غير موجودة!
+                </MudAlert>
+            </MudRTLProvider>
+           
         </LayoutView>
     </NotFound>
 </Router>
