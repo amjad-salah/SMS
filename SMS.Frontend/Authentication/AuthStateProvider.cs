@@ -15,7 +15,6 @@ public class AuthStateProvider(ILocalStorageService localStorage, HttpClient htt
         var identity = string.IsNullOrEmpty(token) ? new ClaimsIdentity() : new ClaimsIdentity(token);
         
         var user = new ClaimsPrincipal(identity);
-        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         return new AuthenticationState(user);
     }

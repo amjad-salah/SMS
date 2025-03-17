@@ -55,7 +55,7 @@ else if (_users != null)
                             Color="Color.Default"/>
                     <MudFab Size="Size.Small" StartIcon="@Icons.Material.Filled.Delete"
                             Class="me-1"
-                            @onclick="@(() => HandleDeleteUser(context.Id))"
+                            @onclick="@(() => NavManager.NavigateTo($"users/delete/{context.Id}"))"
                             Color="Color.Error"/>
                 </MudTd>
             </RowTemplate>

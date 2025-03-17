@@ -9,7 +9,7 @@ public class ApiClient(HttpClient client, ILocalStorageService storage)
 {
     private async Task SetAuthHeader()
     {
-        var token = await storage.GetItemAsync<string>("jwtToken");
+        var token = await storage.GetItemAsync<string>("authToken");
         if (token != null)
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
                 "Bearer", token);
