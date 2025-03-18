@@ -1,0 +1,67 @@
+@page "/fees/add"
+@attribute [Authorize(Roles = "Admin,Accountant")]
+@using SMS.Models.DTOs.Fees
+@using SMS.Models.Entities
+
+<MudRTLProvider RightToLeft="true">
+    <MudIconButton Icon="@Icons.Material.Filled.ArrowForward" Color="Color.Dark" Href="/fees"/>
+    <div class="d-flex justify-content-center align-items-center">
+        <EditForm Model="_model" OnSubmit="@HandleAddFee" FormName="addFeeForm">
+            <MudCard Style="width: 500px" Class="p-4" Elevation="5">
+                <MudCardHeader>
+                    <MudText Typo="Typo.h4">إضافة رسوم</MudText>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudTextField Label="الإسم" @bind-Value="_model.Name" For="@(() => _model.Name)"
+                                  Class="mb-3"/>
+                    <MudTextField Label="المبلغ" @bind-Value="_model.Amount" For="@(() => _model.Amount)"
+                                  InputType="InputType.Number" Class="mb-3"/>
+                    <MudSelect @bind-Value="_model.Type" Placeholder="إختر نوع الرسوم"
+                               Label="نوع الرسوم" Class="mb-3">
+                        @foreach (FeeType type in Enum.GetValues(typeof(FeeType)))
+                        {
+                            <MudSelectItem Value="@type">@type</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Disabled="_isLoading" Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               Class="ms-auto">
+                        @if (_isLoading)
+                        {
+                            <MudProgressCircular Class="ms-1n" Size="Size.Small" Indeterminate="true"
+                                                 Color="Color.Inherit"/>
+                        }
+                        <MudText>حفظ</MudText>
+                    </MudButton>
+                </MudCardActions>
+            </MudCard>
+        </EditForm>
+    </div>
+</MudRTLProvider>
+
+@code {
+    private UpsertFeeDto _model = new();
+    private bool _isLoading = false;
+
+    private async Task HandleAddFee()
+    {
+        _isLoading = true;
+
+        var res = await ApiClient.PostAsync<FeesResponseDto, 
+            UpsertFeeDto>("/api/fees", _model);
+
+        if (res is { Success: true })
+        {
+            Snackbar.Add(res.Message!, Severity.Success);
+            NavManager.NavigateTo("/fees");
+        }
+        else
+        {
+            Snackbar.Add(res?.Message!, Severity.Error);
+        }
+
+        _isLoading = false;
+    }
+}

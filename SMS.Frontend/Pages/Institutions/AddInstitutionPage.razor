@@ -1,0 +1,71 @@
+@page "/institutions/add"
+@using SMS.Models.DTOs.Institutions
+@using SMS.Models.Entities
+
+<MudRTLProvider RightToLeft="true">
+    <MudIconButton Icon="@Icons.Material.Filled.ArrowForward" Color="Color.Dark" Href="/institutions"/>
+    <div class="d-flex justify-content-center align-items-center">
+        <EditForm Model="_model" OnSubmit="@HandleAddInstitution" FormName="addInstitutionForm">
+            <MudCard Style="width: 500px" Class="p-4" Elevation="5">
+                <MudCardHeader>
+                    <MudText Typo="Typo.h4">إضافة مؤسسة</MudText>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudTextField Label="الإسم" @bind-Value="_model.Name" For="@(() => _model.Name)"
+                                  Class="mb-3"/>
+                    <MudTextField Label="البريد الإلكتروني" @bind-Value="_model.Email" For="@(() => _model.Email)"
+                                  InputType="InputType.Email" Class="mb-3"/>
+                    <MudTextField Label="العنوان" @bind-Value="_model.Address" For="@(() => _model.Address)"
+                                  Class="mb-3"/>
+                    <MudTextField Label="رقم الهاتف" @bind-Value="_model.Phone" For="@(() => _model.Phone)"
+                                  Class="mb-3"/>
+                    <MudSelect @bind-Value="_model.InstitutionType" Placeholder="إختر نوع المؤسسة"
+                               Label="نوع المؤسسة" Class="mb-3">
+                        @foreach (InstitutionType role in Enum.GetValues(typeof(InstitutionType)))
+                        {
+                            <MudSelectItem Value="@role">@role</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Disabled="_isLoading" Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               Class="ms-auto">
+                        @if (_isLoading)
+                        {
+                            <MudProgressCircular Class="ms-1n" Size="Size.Small" Indeterminate="true"
+                                                 Color="Color.Inherit"/>
+                        }
+                        <MudText>حفظ</MudText>
+                    </MudButton>
+                </MudCardActions>
+            </MudCard>
+        </EditForm>
+    </div>
+</MudRTLProvider>
+
+@code {
+    private UpsertInstitutionDto _model = new();
+    private bool _isLoading = false;
+    
+    private async Task HandleAddInstitution()
+    {
+        _isLoading = true;
+
+        var res = await ApiClient.PostAsync<InstitutionsResponseDto,
+            UpsertInstitutionDto>("api/institutions", _model);
+
+        if (res is { Success: true })
+        {
+            Snackbar.Add(res.Message!, Severity.Info);
+            _isLoading = false;
+            NavManager.NavigateTo("/institutions");
+        }
+        else
+        {
+            Snackbar.Add(res?.Message!, Severity.Error);
+        }
+
+        _isLoading = false;
+    }
+}

@@ -1,0 +1,31 @@
+@page "/institutions/{id:int}"
+@using SMS.Models.DTOs.Institutions
+
+@if (_institution != null)
+{
+    <MudText Typo="Typo.h4">@_institution.Name</MudText>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private InstitutionDetailsDto? _institution;
+
+    private bool _isLoading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _isLoading = true;
+        
+        var res = await ApiClient.GetFromJsonAsync<InstitutionsResponseDto>($"/api/institutions/{Id}");
+
+        if (res is { Success: true })
+        {
+            _institution = res.Institution;
+        }
+
+        _isLoading = false;
+    }
+
+}

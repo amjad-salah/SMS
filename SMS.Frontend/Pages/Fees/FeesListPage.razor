@@ -1,0 +1,93 @@
+@page "/fees"
+@attribute [Authorize(Roles = "Admin,Accountant")]
+@using SMS.Models.DTOs.Fees
+
+@if (_isLoading)
+{
+    <div class="d-flex justify-content-center align-items-center">
+        <MudProgressCircular Size="Size.Medium" Indeterminate="true"/>
+    </div>
+}
+else if (_fees != null)
+{
+    <MudRTLProvider RightToLeft="true">
+        <MudFab Size="Size.Medium" StartIcon="@Icons.Material.Filled.Add"
+                Class="mb-10"
+                @onclick="@(() => NavManager.NavigateTo($"fees/add"))"
+                Color="Color.Dark"/>
+        <MudTable Items="@_fees" Dense Hover Filter="new Func<FeeDto, bool>(FilterFunc1)" Elevation="4">
+            <ToolBarContent>
+                <MudText Typo="Typo.h4">الرسوم</MudText>
+                <MudSpacer/>
+                <MudTextField @bind-Value="_searchText" Placeholder="بحث بالإسم..."
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium"
+                              Class="mt-0"></MudTextField>
+            </ToolBarContent>
+            <HeaderContent>
+
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<FeeDto, object>(x => x.Name)">
+                        الإسم
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>المبلغ</MudTh>
+                <MudTh>النوع</MudTh>
+                <MudTh></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.Name</MudTd>
+                <MudTd>@context.Amount</MudTd>
+                <MudTd>@Enum.GetName(context.Type.GetType(), context.Type)</MudTd>
+                <MudTd>
+                    <MudFab Size="Size.Small" StartIcon="@Icons.Material.Filled.ReadMore"
+                            Class="me-1"
+                            @onclick="@(() => NavManager.NavigateTo($"fees/{context.Id}"))"
+                            Color="Color.Default"/>
+                    <MudFab Size="Size.Small" StartIcon="@Icons.Material.Filled.Delete"
+                            @onclick="@(() => NavManager.NavigateTo($"fees/delete/{context.Id}"))"
+                            Color="Color.Error"/>
+                </MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager/>
+            </PagerContent>
+        </MudTable>
+    </MudRTLProvider>
+}
+
+@code {
+    private List<FeeDto>? _fees;
+    private bool _isLoading = false;
+    private string _searchText = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        _isLoading = true;
+
+        var res = await ApiClient.GetFromJsonAsync<FeesResponseDto>("/api/fees");
+
+        if (res is { Success: true })
+        {
+            _fees = res.Fees;
+        }
+
+        _isLoading = false;
+    }
+    
+    private bool FilterFunc1(FeeDto element)
+    {
+        return FilterFunc(element, _searchText);
+    }
+
+    private bool FilterFunc(FeeDto element, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (element.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    }
+
+}

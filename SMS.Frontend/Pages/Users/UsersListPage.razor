@@ -111,17 +111,4 @@ else if (_users == null && !string.IsNullOrEmpty(_errorMessage))
 
         return false;
     }
-
-    private async Task HandleDeleteUser(int id)
-    {
-        var res = await ApiClient.DeleteAsync<UsersResponseDto>($"api/users/{id}");
-
-        if (res is { Success: true })
-        {
-            Snackbar.Add(res.Message!, Severity.Success);
-            NavManager.Refresh(true);
-        }
-    }
 }
-
-@* TODO: Convert delete to link to page *@

@@ -13,6 +13,5 @@ public class UpsertInstitutionValidation : AbstractValidator<UpsertInstitutionDt
         RuleFor(i => i.Address).NotEmpty().WithMessage("Address is required");
         RuleFor(i => i.Phone).NotEmpty().WithMessage("Phone is required");
         RuleFor(i => i.InstitutionType).IsInEnum().WithMessage("Institution type is required");
-        RuleFor(i => i.DateEstablished).NotEmpty().WithMessage("Date Established is required");
     }
 }

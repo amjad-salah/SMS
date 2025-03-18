@@ -1,5 +1,6 @@
 @page "/users/edit/{id:int}"
 @attribute [Authorize(Roles = "Admin")]
+@using Mapster
 @using SMS.Models.DTOs.Institutions
 @using SMS.Models.DTOs.Users
 @using SMS.Models.Entities
@@ -61,13 +62,7 @@
         var resUser = await ApiClient.GetFromJsonAsync<UsersResponseDto>($"/api/users/{Id}");
 
         if (resUser is { Success: true })
-            _model = new UpdateUserDto
-            {
-                FullName = resUser.User!.FullName,
-                Email = resUser.User!.Email,
-                InstitutionId = resUser.User!.InstitutionId,
-                Role = resUser.User!.Role
-            };
+            _model = resUser.User.Adapt<UpdateUserDto>();
 
         var res = await ApiClient.GetFromJsonAsync<InstitutionsResponseDto>("/api/Institutions");
 

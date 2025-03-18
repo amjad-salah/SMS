@@ -110,7 +110,7 @@ public class InstitutionService(
         {
             var exists = await context.Institutions.AnyAsync(i => i.Name == institution.Name);
 
-            if (!exists)
+            if (exists)
             {
                 Log.Error("Institution with name {Name} already exists", institution.Name);
                 return new InstitutionsResponseDto()
@@ -126,7 +126,6 @@ public class InstitutionService(
         existInstitution.Phone = institution.Phone;
         existInstitution.Address = institution.Address;
         existInstitution.InstitutionType = institution.InstitutionType;
-        existInstitution.DateEstablished = institution.DateEstablished;
 
         await context.SaveChangesAsync();
 

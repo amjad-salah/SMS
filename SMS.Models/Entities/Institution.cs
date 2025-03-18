@@ -18,8 +18,6 @@ public class Institution : BaseEntity
 
     [Column("email", TypeName = "varchar(255)")]
     public string Email { get; set; } = string.Empty;
-
-    [Column("date_established")] public DateOnly DateEstablished { get; set; }
     [Column("institution_type")] public InstitutionType InstitutionType { get; set; }
 
     public virtual List<User>? Users { get; set; }

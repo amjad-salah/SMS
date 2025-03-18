@@ -1,0 +1,35 @@
+@page "/institutions/delete/{id:int}"
+@using SMS.Models.DTOs.Users
+
+<div class="mt-20 d-flex justify-content-center align-items-center">
+    <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined" ContentAlignment="HorizontalAlignment.Center">
+        <MudText Typo="Typo.h6" Class="mb-10">هل تريد مسح هذه المؤسسة؟</MudText>
+        <MudButton Color="Color.Error" Variant="Variant.Filled" Class="me-5" Disabled="_isLoading" @onclick="HandleDeleteInstitution">نعم</MudButton>
+        <MudButton Color="Color.Success" Variant="Variant.Filled" Href="/institutions">لا</MudButton>
+    </MudAlert>
+</div>
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private bool _isLoading = false;
+    
+    private async Task HandleDeleteInstitution()
+    {
+        _isLoading = true;
+        
+        var res = await ApiClient.DeleteAsync<UsersResponseDto>($"/api/institutions/{Id}");
+        
+        if (res is { Success: true })
+        {
+            Snackbar.Add(res.Message!, Severity.Info);
+            _isLoading = false;
+            NavManager.NavigateTo("/institutions");
+        }
+        else
+        {
+            _isLoading = false;
+            Snackbar.Add(res?.Message!, Severity.Error);
+        }
+    }
+}
