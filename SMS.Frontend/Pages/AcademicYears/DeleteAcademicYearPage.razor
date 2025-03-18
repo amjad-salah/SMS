@@ -1,0 +1,38 @@
+@page "/academic-years/delete/{id:int}"
+@using SMS.Models.DTOs.AcademicYears
+
+@attribute [Authorize(Roles = "Admin,Registrar")]
+
+<div class="mt-20 d-flex justify-content-center align-items-center">
+    <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined" ContentAlignment="HorizontalAlignment.Center">
+        <MudText Typo="Typo.h6" Class="mb-10">هل تريد مسح هذا العام الدراسي؟</MudText>
+        <MudButton Color="Color.Error" Variant="Variant.Filled" Class="me-5" Disabled="_isLoading" @onclick="HandleDeleteYear">نعم</MudButton>
+        <MudButton Color="Color.Success" Variant="Variant.Filled" Href="/academic-years">لا</MudButton>
+    </MudAlert>
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private bool _isLoading = false;
+    
+    private async Task HandleDeleteYear()
+    {
+        _isLoading = true;
+        
+        var res = await ApiClient.DeleteAsync<AcademicYearsResponseDto>($"/api/academic-years/{Id}");
+        
+        if (res is { Success: true })
+        {
+            Snackbar.Add(res.Message!, Severity.Info);
+            _isLoading = false;
+            NavManager.NavigateTo("/academic-years");
+        }
+        else
+        {
+            _isLoading = false;
+            Snackbar.Add(res?.Message!, Severity.Error);
+        }
+    }
+}

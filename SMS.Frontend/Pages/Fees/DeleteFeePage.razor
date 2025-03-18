@@ -1,6 +1,6 @@
 @page "/fees/delete/{id:int}"
+@attribute [Authorize(Roles = "Admin,Accountant")]
 @using SMS.Models.DTOs.Fees
-<h3>DeleteFeePage</h3>
 
 <div class="mt-20 d-flex justify-content-center align-items-center">
     <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined" ContentAlignment="HorizontalAlignment.Center">

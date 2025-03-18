@@ -10,8 +10,8 @@ public class AcademicYear : BaseEntity
     [Column("name", TypeName = "varchar(50)")]
     public string Name { get; set; } = string.Empty;
 
-    [Column("start_date")] public DateOnly StartDate { get; set; }
-    [Column("end_date")] public DateOnly EndDate { get; set; }
+    [Column("start_date")] public DateTime StartDate { get; set; }
+    [Column("end_date")] public DateTime EndDate { get; set; }
     [Column("is_active")] public bool IsCurrent { get; set; }
     public virtual List<Student>? Students { get; set; }
     public virtual List<Exam>? Exams { get; set; }

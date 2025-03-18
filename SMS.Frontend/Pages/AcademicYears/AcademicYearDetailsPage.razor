@@ -1,0 +1,39 @@
+@page "/academic-years/{id:int}"
+@using SMS.Models.DTOs.AcademicYears
+@attribute [Authorize(Roles = "Admin,Registrar")]
+
+@if (_isLoading)
+{
+    <div class="d-flex justify-content-center align-items-center">
+        <MudProgressCircular Size="Size.Medium" Indeterminate="true"/>
+    </div>
+}
+else if (_yearDetails != null)
+{
+    <MudRTLProvider RightToLeft="true">
+        <MudText Typo="Typo.h4">@_yearDetails.Name</MudText>
+    </MudRTLProvider>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private bool _isLoading = false;
+    private AcademicYearDetailsDto? _yearDetails;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _isLoading = true;
+
+        var res = await ApiClient.GetFromJsonAsync<AcademicYearsResponseDto>($"/api/academic-years/{Id}");
+
+        if (res is { Success: true })
+        {
+            _yearDetails = res.AcademicYear;
+        }
+
+        _isLoading = false;
+    }
+
+}

@@ -1,6 +1,6 @@
 namespace SMS.Models.DTOs.AcademicYears;
 
-public class UpsertAcademicYearDto
+public class UpsertAcademicYearFEDto
 {
     public string Name { get; set; } = string.Empty;
     public DateTime? StartDate { get; set; }

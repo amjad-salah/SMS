@@ -1,6 +1,7 @@
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Formatting.Json;
+using SMS.Backend.Data;
 using SMS.Backend.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);

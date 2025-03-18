@@ -195,7 +195,7 @@ public class ApplicationsService(
             ClassId = existClass.Id,
             BirthDate = existingApplication.BirthDate,
             ParentId = newParentResponse.Parent!.Id,
-            AdmissionDate = DateOnly.FromDateTime(DateTime.UtcNow.Date),
+            AdmissionDate = DateTime.UtcNow.Date,
             InstitutionId = existingApplication.InstitutionId
         };
 
@@ -203,7 +203,7 @@ public class ApplicationsService(
 
         var newInvoice = new UpsertInvoiceDto()
         {
-            Date = DateOnly.FromDateTime(DateTime.UtcNow.Date),
+            Date = DateTime.UtcNow.Date,
             Tax = approveDto.Tax,
             Discount = approveDto.Discount,
             StudentId = newStudentResponse.Student!.Id

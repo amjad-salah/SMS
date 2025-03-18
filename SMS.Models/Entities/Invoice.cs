@@ -7,7 +7,7 @@ namespace SMS.Models.Entities;
 [Index(nameof(InvoiceNo), IsUnique = true)]
 public class Invoice : BaseEntity
 {
-    [Column("date")] public DateOnly Date { get; set; }
+    [Column("date")] public DateTime Date { get; set; }
 
     [Column("sub_total", TypeName = "decimal(18, 2)")]
     public decimal SubTotal { get; set; }

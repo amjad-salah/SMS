@@ -8,7 +8,7 @@ public class Exam : BaseEntity
     [Column("title", TypeName = "varchar(50)")]
     public string Title { get; set; } = string.Empty;
 
-    [Column("exam_date")] public DateOnly ExamDate { get; set; }
+    [Column("exam_date")] public DateTime ExamDate { get; set; }
     [Column("start_time")] public TimeOnly StartTime { get; set; }
     [Column("end_time")] public TimeOnly EndTime { get; set; }
     [Column("exam_type_id")] public int ExamTypeId { get; set; }

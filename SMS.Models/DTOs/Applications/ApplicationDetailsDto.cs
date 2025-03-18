@@ -10,7 +10,7 @@ public class ApplicationDetailsDto : ApplicationDto
     public string? GuardianAddress { get; set; } = string.Empty;
     public int GradeId { get; set; }
     public GradeDto? Grade { get; set; }
-    public DateOnly BirthDate { get; set; }
+    public DateTime BirthDate { get; set; }
     public int AcademicYearId { get; set; }
     public AcademicYearDto? AcademicYear { get; set; }
 }

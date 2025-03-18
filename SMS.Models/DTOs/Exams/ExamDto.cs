@@ -8,7 +8,7 @@ public class ExamDto
 {
     public int Id { get; set; }
     public string Title { get; set; } = string.Empty;
-    public DateOnly ExamDate { get; set; }
+    public DateTime ExamDate { get; set; }
     public TimeOnly StartTime { get; set; }
     public TimeOnly EndTime { get; set; }
     public int ExamTypeId { get; set; }

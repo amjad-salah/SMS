@@ -11,7 +11,7 @@ public class UpsertApplicationDto
     public string? GuardianEmail { get; set; } = string.Empty;
     public int GradeId { get; set; }
     public Gender Gender { get; set; }
-    public DateOnly BirthDate { get; set; }
+    public DateTime BirthDate { get; set; }
     public int AcademicYearId { get; set; }
     public int InstitutionId { get; set; }
     public ApplicationStatus Status { get; set; }

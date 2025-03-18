@@ -1,0 +1,61 @@
+@page "/academic-years/add"
+@using SMS.Models.DTOs.AcademicYears
+@attribute [Authorize(Roles = "Admin,Registrar")]
+
+<MudRTLProvider RightToLeft="true">
+    <MudIconButton Icon="@Icons.Material.Filled.ArrowForward" Color="Color.Dark" Href="/academic-years"/>
+    <div class="d-flex justify-content-center align-items-center">
+        <EditForm Model="_model" OnSubmit="@HandleAddYear" FormName="addFeeForm">
+            <MudCard Style="width: 500px" Class="p-4" Elevation="5">
+                <MudCardHeader>
+                    <MudText Typo="Typo.h4">إضافة عام دراسي</MudText>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudTextField Label="الإسم" @bind-Value="_model.Name" For="@(() => _model.Name)"
+                                  Class="mb-3"/>
+                    <MudDatePicker Label="تاريخ البداية" @bind-Date="_model.StartDate" DateFormat="dd-MM-yyyy hh:mm:ss"/>
+                    <MudDatePicker Label="تاريخ النهاية" @bind-Date="_model.EndDate" DateFormat="dd-MM-yyyy hh:mm:ss"/>
+                    <MudCheckBox Label="العام الحالي" @bind-Value="_model.IsCurrent" LabelPlacement="Placement.Start" />
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Disabled="_isLoading" Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               Class="ms-auto">
+                        @if (_isLoading)
+                        {
+                            <MudProgressCircular Class="ms-1n" Size="Size.Small" Indeterminate="true"
+                                                 Color="Color.Inherit"/>
+                        }
+                        <MudText>حفظ</MudText>
+                    </MudButton>
+                </MudCardActions>
+            </MudCard>
+        </EditForm>
+    </div>
+</MudRTLProvider>
+
+@code {
+    private UpsertAcademicYearDto _model = new();
+    private bool _isLoading = false;
+
+    private async Task HandleAddYear()
+    {
+        _isLoading = true;
+
+        var res = await ApiClient.PostAsync<AcademicYearsResponseDto, 
+            UpsertAcademicYearDto>($"/api/academic-years", _model);
+
+        if (res is { Success: true })
+        {
+            Snackbar.Add(res.Message!, Severity.Success);
+            _isLoading = false;
+            NavManager.NavigateTo($"/academic-years/{res.AcademicYear!.Id}");
+        }
+        else
+        {
+            Snackbar.Add(res?.Message!, Severity.Error);
+        }
+
+        _isLoading = false;
+    }
+}

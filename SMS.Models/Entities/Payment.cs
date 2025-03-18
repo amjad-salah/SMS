@@ -6,7 +6,7 @@ namespace SMS.Models.Entities;
 public class Payment : BaseEntity
 {
     [Column("amount")] public decimal Amount { get; set; }
-    [Column("date")] public DateOnly Date { get; set; }
+    [Column("date")] public DateTime Date { get; set; }
 
     [Column("transaction_id", TypeName = "varchar(18)")]
     public string? TransactionId { get; set; }

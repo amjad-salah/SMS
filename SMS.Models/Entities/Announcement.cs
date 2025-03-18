@@ -11,7 +11,7 @@ public class Announcement : BaseEntity
     [Column("description", TypeName = "text")]
     public string Description { get; set; } = string.Empty;
 
-    [Column("date")] public DateOnly Date { get; set; }
+    [Column("date")] public DateTime Date { get; set; }
     [Column("class_id")] public int? ClassId { get; set; }
     [ForeignKey(nameof(ClassId))] public virtual Class? Class { get; set; }
 }

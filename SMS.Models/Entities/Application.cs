@@ -24,7 +24,7 @@ public class Application : BaseEntity
 
     [Column("grade_id")] public int GradeId { get; set; }
     [ForeignKey(nameof(GradeId))] public virtual Grade? Grade { get; set; }
-    [Column("birth_date")] public DateOnly BirthDate { get; set; }
+    [Column("birth_date")] public DateTime BirthDate { get; set; }
     [Column("gender")] public Gender Gender { get; set; }
     [Column("application_status")] public ApplicationStatus Status { get; set; }
 

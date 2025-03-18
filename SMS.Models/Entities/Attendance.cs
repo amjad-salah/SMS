@@ -5,7 +5,7 @@ namespace SMS.Models.Entities;
 [Table("attendances")]
 public class Attendance : BaseEntity
 {
-    [Column("date")] public DateOnly Date { get; set; }
+    [Column("date")] public DateTime Date { get; set; }
     [Column("present")] public bool Present { get; set; }
     [Column("class_id")] public int ClassId { get; set; }
     public virtual Class? Class { get; set; }

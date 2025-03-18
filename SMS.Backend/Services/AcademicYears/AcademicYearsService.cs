@@ -110,8 +110,8 @@ public class AcademicYearsService(
         }
 
         existYear.Name = year.Name;
-        existYear.StartDate = year.StartDate;
-        existYear.EndDate = year.EndDate;
+        existYear.StartDate = year.StartDate ?? DateTime.Now;
+        existYear.EndDate = year.EndDate ?? DateTime.Now;
         existYear.IsCurrent = year.IsCurrent;
 
         await context.SaveChangesAsync();

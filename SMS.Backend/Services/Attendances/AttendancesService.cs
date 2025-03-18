@@ -73,7 +73,7 @@ public class AttendancesService(
             return new AttendanceResponseDto() { Success = false, Message = "Class not found" };
         }
 
-        request.Date ??= DateOnly.FromDateTime(DateTime.Now);
+        request.Date ??= DateTime.Now;
 
         if (existClass.Students != null)
         {
@@ -81,7 +81,7 @@ public class AttendancesService(
                      {
                          StudentId = student.Id,
                          ClassId = request.ClassId,
-                         Date = request.Date ?? DateOnly.FromDateTime(DateTime.Now),
+                         Date = request.Date ?? DateTime.Now,
                          Present = false
                      }))
                 await AddAttendanceAsync(attendance);

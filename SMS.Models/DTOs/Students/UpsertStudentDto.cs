@@ -11,9 +11,9 @@ public class UpsertStudentDto
     public Gender Gender { get; set; }
     public StudentStatus Status { get; set; }
     public int AcademicYearId { get; set; }
-    public DateOnly BirthDate { get; set; }
+    public DateTime BirthDate { get; set; }
     public int ParentId { get; set; }
-    public DateOnly AdmissionDate { get; set; }
+    public DateTime AdmissionDate { get; set; }
     public string? MedicalInfo { get; set; }
     public int InstitutionId { get; set; }
 }

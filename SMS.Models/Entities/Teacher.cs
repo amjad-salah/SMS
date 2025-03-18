@@ -16,7 +16,7 @@ public class Teacher : BaseEntity
     [Column("email", TypeName = "varchar(255)")]
     public string? Email { get; set; } = string.Empty;
 
-    [Column("join_date")] public DateOnly JoinDate { get; set; }
+    [Column("join_date")] public DateTime JoinDate { get; set; }
 
     [Column("address", TypeName = "varchar(255)")]
     public string? Address { get; set; } = string.Empty;

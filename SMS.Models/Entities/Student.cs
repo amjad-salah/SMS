@@ -18,10 +18,10 @@ public class Student : BaseEntity
     [Column("student_no", TypeName = "varchar(50)")]
     public string StudentNo { get; set; } = string.Empty;
 
-    [Column("birth_date")] public DateOnly BirthDate { get; set; }
+    [Column("birth_date")] public DateTime BirthDate { get; set; }
     [Column("parent_id")] public int ParentId { get; set; }
     [ForeignKey(nameof(ParentId))] public virtual Parent? Parent { get; set; }
-    [Column("admission_date")] public DateOnly AdmissionDate { get; set; }
+    [Column("admission_date")] public DateTime AdmissionDate { get; set; }
 
     [Column("medical_info", TypeName = "varchar(500)")]
     public string? MedicalInfo { get; set; }
