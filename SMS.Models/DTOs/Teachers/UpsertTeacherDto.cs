@@ -7,6 +7,6 @@ public class UpsertTeacherDto
     public string? Email { get; set; } = string.Empty;
     public string? Address { get; set; } = string.Empty;
     public int InstitutionId { get; set; }
-    public DateTime JoinDate { get; set; }
+    public DateTime? JoinDate { get; set; }
     public decimal ExperienceYears { get; set; }
 }

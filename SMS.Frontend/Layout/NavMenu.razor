@@ -21,6 +21,24 @@
                     Grades
                 </MudNavLink>
             </MudNavGroup>
+            <MudNavGroup Title="School" Expanded="true" Icon="@Icons.Material.Filled.School">
+                <MudNavLink Href="/teachers" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.VerifiedUser">
+                    Teachers
+                </MudNavLink>
+                <MudNavLink Href="/classes" Match="NavLinkMatch.Prefix"
+                            Icon="@Icons.Material.Filled.Class">Classes
+                </MudNavLink>
+                @* <MudNavLink Href="/fees" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Money"> *@
+                @*     Fees *@
+                @* </MudNavLink> *@
+                @* <MudNavLink Href="/academic-years" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.CalendarMonth"> *@
+                @*     Academic Years *@
+                @* </MudNavLink> *@
+                @* *@
+                @* <MudNavLink Href="/grades" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Grade"> *@
+                @*     Grades *@
+                @* </MudNavLink> *@
+            </MudNavGroup>
         </Authorized>
         <NotAuthorized>
             <MudNavLink Href="/login" Icon="@Icons.Material.Filled.Login" Match="NavLinkMatch.Prefix">Login</MudNavLink>

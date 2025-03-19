@@ -117,7 +117,7 @@ public class DashboardService(AppDbContext context) : IDashboardService
             .Include(s => s.Class)
             .Include(s => s.Grade)
             .Include(s => s.AcademicYear)
-            .ProjectToType<StudentDto>()
+            .ProjectToType<StudentDetailsDto>()
             .ToListAsync();
 
         var classes = new List<ClassDetailsDto>();

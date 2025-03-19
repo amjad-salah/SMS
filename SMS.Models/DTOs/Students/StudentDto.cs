@@ -11,8 +11,6 @@ public class StudentDto
     public string FullName { get; set; } = string.Empty;
     public int GradeId { get; set; }
     public virtual GradeDto? Grade { get; set; }
-    public int ClassId { get; set; }
-    public virtual ClassDto? Class { get; set; }
     public string StudentNo { get; set; } = string.Empty;
     public Gender Gender { get; set; }
     public StudentStatus Status { get; set; }

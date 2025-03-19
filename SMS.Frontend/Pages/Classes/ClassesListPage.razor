@@ -1,0 +1,102 @@
+@page "/classes"
+@using SMS.Models.DTOs.Classes
+@attribute [Authorize(Roles = "Admin,Teacher,Support")]
+
+@if (_isLoading)
+{
+    <div class="d-flex justify-content-center align-items-center">
+        <MudProgressCircular Size="Size.Medium" Indeterminate="true"/>
+    </div>
+}
+else if (_classes != null)
+{
+    <MudRTLProvider RightToLeft="true">
+        <MudFab Size="Size.Medium" StartIcon="@Icons.Material.Filled.Add"
+                Class="mb-10"
+                @onclick="@(() => NavManager.NavigateTo($"classes/add"))"
+                Color="Color.Dark"/>
+        <MudTable Items="@_classes" Dense Hover Filter="new Func<ClassDto, bool>(FilterFunc1)" Elevation="4">
+            <ToolBarContent>
+                <MudText Typo="Typo.h4">الفصول</MudText>
+                <MudSpacer/>
+                <MudTextField @bind-Value="_searchText" Placeholder="بحث بالإسم..."
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium"
+                              Class="mt-0"></MudTextField>
+            </ToolBarContent>
+            <HeaderContent>
+
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<ClassDto, object>(x => x.Name)">
+                        الإسم
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>المؤسسة</MudTh>
+                <MudTh>المستوى</MudTh>
+                <MudTh>السعة</MudTh>
+                <MudTh>عدد الطلاب</MudTh>
+                <MudTh></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.Name</MudTd>
+                <MudTd>@context.Institution!.Name</MudTd>
+                <MudTd>@context.Grade!.Name</MudTd>
+                <MudTd>@context.Capacity</MudTd>
+                <MudTd>@context.Students!.Count</MudTd>
+                <MudTd>
+                    <MudFab Size="Size.Small" StartIcon="@Icons.Material.Filled.ReadMore"
+                            Class="me-1"
+                            @onclick="@(() => NavManager.NavigateTo($"classes/{context.Id}"))"
+                            Color="Color.Default"/>
+                    <MudFab Size="Size.Small" StartIcon="@Icons.Material.Filled.Edit"
+                            Class="me-1"
+                            @onclick="@(() => NavManager.NavigateTo($"classes/edit/{context.Id}"))"
+                            Color="Color.Primary"/>
+                    <MudFab Size="Size.Small" StartIcon="@Icons.Material.Filled.Delete"
+                            @onclick="@(() => NavManager.NavigateTo($"classes/delete/{context.Id}"))"
+                            Color="Color.Error"/>
+                </MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager/>
+            </PagerContent>
+        </MudTable>
+    </MudRTLProvider>
+}
+
+@code {
+    private List<ClassDto>? _classes;
+    private bool _isLoading = false;
+    private string _searchText = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        _isLoading = true;
+
+        var res = await ApiClient.GetFromJsonAsync<ClassesResponseDto>("/api/classes");
+
+        if (res is { Success: true })
+        {
+            _classes = res.Classes;
+        }
+
+        _isLoading = false;
+    }
+    
+    private bool FilterFunc1(ClassDto element)
+    {
+        return FilterFunc(element, _searchText);
+    }
+
+    private bool FilterFunc(ClassDto element, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (element.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (element.Grade!.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    }
+}

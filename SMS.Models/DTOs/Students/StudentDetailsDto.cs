@@ -1,4 +1,5 @@
 using SMS.Models.DTOs.Attendances;
+using SMS.Models.DTOs.Classes;
 using SMS.Models.DTOs.ExamResults;
 using SMS.Models.DTOs.Institutions;
 using SMS.Models.DTOs.Invoices;
@@ -10,6 +11,8 @@ namespace SMS.Models.DTOs.Students;
 
 public class StudentDetailsDto : StudentDto
 {
+    public int ClassId { get; set; }
+    public virtual ClassDto? Class { get; set; }
     public virtual List<StudentRecordDto>? Records { get; set; }
     public virtual List<ExamResultDto>? ExamResults { get; set; }
     public virtual List<AttendanceDto>? Attendances { get; set; }

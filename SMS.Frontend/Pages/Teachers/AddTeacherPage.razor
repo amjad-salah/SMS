@@ -1,0 +1,87 @@
+@page "/teachers/add"
+@using SMS.Models.DTOs.Institutions
+@using SMS.Models.DTOs.Teachers
+@attribute [Authorize(Roles = "Admin,Support,Registrar,Teacher")]
+
+<MudRTLProvider RightToLeft="true">
+    <MudIconButton Icon="@Icons.Material.Filled.ArrowForward" Color="Color.Dark" Href="/teachers"/>
+    <div class="d-flex justify-content-center align-items-center">
+        <EditForm Model="_model" OnSubmit="@HandleAddTeacher" FormName="addInstitutionForm">
+            <MudCard Style="width: 500px" Class="p-4" Elevation="5">
+                <MudCardHeader>
+                    <MudText Typo="Typo.h4">إضافة أستاذ</MudText>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudTextField Label="الإسم" @bind-Value="_model.FullName" For="@(() => _model.FullName)"
+                                  Class="mb-3"/>
+                    <MudTextField Label="البريد الإلكتروني" @bind-Value="_model.Email" For="@(() => _model.Email)"
+                                  InputType="InputType.Email" Class="mb-3"/>
+                    <MudTextField Label="رقم الهاتق" @bind-Value="_model.Phone" For="@(() => _model.Phone)"
+                                  Class="mb-3"/>
+                    <MudTextField Label="العنوان" @bind-Value="_model.Address" For="@(() => _model.Address)"
+                                  Class="mb-3"/>
+                    <MudDatePicker Label="تاريخ الإنتساب" @bind-Date="_model.JoinDate" DateFormat="dd-MM-yyyy hh:mm:ss"
+                                   ShowToolbar="false" />
+                    <MudTextField Label="سنوات الخبرة" @bind-Value="_model.ExperienceYears" For="@(() => _model.ExperienceYears)"
+                                  Class="mb-3" InputType="InputType.Number"/>
+                    <MudSelect @bind-Value="_model.InstitutionId" Placeholder="إختر المؤسسة"
+                               Label="المؤسسة" Class="mb-3">
+                        @foreach (var institution in _institutions)
+                        {
+                            <MudSelectItem Value="@institution.Id">@institution.Name</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Disabled="_isLoading" Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               Class="ms-auto">
+                        @if (_isLoading)
+                        {
+                            <MudProgressCircular Class="ms-1n" Size="Size.Small" Indeterminate="true"
+                                                 Color="Color.Inherit"/>
+                        }
+                        <MudText>حفظ</MudText>
+                    </MudButton>
+                </MudCardActions>
+            </MudCard>
+        </EditForm>
+    </div>
+</MudRTLProvider>
+
+@code {
+    private UpsertTeacherDto _model = new();
+    private bool _isLoading = false;
+    private List<InstitutionDto> _institutions = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var res = await ApiClient.GetFromJsonAsync<InstitutionsResponseDto>("/api/institutions");
+
+        if (res is { Success: true })
+        {
+            _institutions = res.Institutions!;
+        }
+    }
+
+    private async Task HandleAddTeacher()
+    {
+        _isLoading = true;
+
+        var res = await ApiClient.PostAsync<TeachersResponseDto, 
+            UpsertTeacherDto>("/api/teachers", _model);
+
+        if (res is { Success: true })
+        {
+            Snackbar.Add(res.Message!, Severity.Success);
+            _isLoading = false;
+            NavManager.NavigateTo("/teachers");
+        }
+        else
+        {
+            Snackbar.Add(res?.Message!, Severity.Error);
+        }
+
+        _isLoading = false;
+    }
+}

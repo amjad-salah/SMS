@@ -93,7 +93,7 @@ public class TeachersService(
         existingTeacher.Email = teacher.Email;
         existingTeacher.InstitutionId = teacher.InstitutionId;
         existingTeacher.Address = teacher.Address;
-        existingTeacher.JoinDate = teacher.JoinDate;
+        existingTeacher.JoinDate = teacher.JoinDate?? DateTime.UtcNow;
         existingTeacher.ExperienceYears = teacher.ExperienceYears;
 
         await context.SaveChangesAsync();

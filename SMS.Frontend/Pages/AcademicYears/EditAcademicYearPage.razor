@@ -22,9 +22,11 @@ else
                     <MudCardContent>
                         <MudTextField Label="الإسم" @bind-Value="_model.Name" For="@(() => _model.Name)"
                                       Class="mb-3"/>
-                        <MudDatePicker Label="تاريخ البداية" @bind-Date="_model.StartDate" DateFormat="dd-MM-yyyy hh:mm:ss"/>
-                        <MudDatePicker Label="تاريخ النهاية" @bind-Date="_model.EndDate" DateFormat="dd-MM-yyyy hh:mm:ss"/>
-                        <MudCheckBox Label="العام الحالي" @bind-Value="_model.IsCurrent" LabelPlacement="Placement.Start" />
+                        <MudDatePicker Label="تاريخ البداية" @bind-Date="_model.StartDate" DateFormat="dd-MM-yyyy hh:mm:ss"
+                                       ShowToolbar="false" />
+                        <MudDatePicker Label="تاريخ النهاية" @bind-Date="_model.EndDate" DateFormat="dd-MM-yyyy hh:mm:ss"
+                                       ShowToolbar="false" />
+                        <MudCheckBox Label="العام الحالي" @bind-Value="_model.IsCurrent" LabelPlacement="Placement.Start"/>
                     </MudCardContent>
                     <MudCardActions>
                         <MudButton ButtonType="ButtonType.Submit" Disabled="_isLoading" Variant="Variant.Filled"
