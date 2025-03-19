@@ -1,0 +1,54 @@
+@page "/grades/add"
+@attribute [Authorize(Roles = "Admin,Support,Registrar")]
+@using SMS.Models.DTOs.Grades
+
+<EditForm Model="_model" OnSubmit="@HandleAddGarde" FormName="addInstitutionForm">
+    <MudCard Style="width: 500px" Class="p-4" Elevation="5">
+        <MudCardHeader>
+            <MudText Typo="Typo.h4">إضافة مستوى</MudText>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudTextField Label="الإسم" @bind-Value="_model.Name" For="@(() => _model.Name)"
+                          Class="mb-3"/>
+        </MudCardContent>
+        <MudCardActions>
+            <MudButton ButtonType="ButtonType.Submit" Disabled="_isLoading" Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Class="ms-auto">
+                @if (_isLoading)
+                {
+                    <MudProgressCircular Class="ms-1n" Size="Size.Small" Indeterminate="true"
+                                         Color="Color.Inherit"/>
+                }
+                <MudText>حفظ</MudText>
+            </MudButton>
+        </MudCardActions>
+    </MudCard>
+</EditForm>
+
+@code {
+    private UpsertGradeDto _model = new();
+    private bool _isLoading = false;
+
+    private async Task HandleAddGarde()
+    {
+        _isLoading = true;
+
+        var res = await ApiClient.PostAsync<GradesResponseDto, 
+            UpsertGradeDto>("/api/grades", _model);
+
+        if (res is { Success: true })
+        {
+            Snackbar.Add(res.Message!, Severity.Success);
+            _isLoading = false;
+            NavManager.NavigateTo($"/grades/{res.Grade!.Id}");
+        }
+        else
+        {
+            Snackbar.Add(res?.Message!, Severity.Error);
+            _isLoading = false;
+        }
+
+        _isLoading = false;
+    }
+}

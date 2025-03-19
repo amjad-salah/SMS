@@ -1,0 +1,86 @@
+@page "/grades/edit/{id:int}"
+@attribute [Authorize(Roles = "Admin,Support,Registrar")]
+@using Mapster
+@using SMS.Models.DTOs.Grades
+
+@if (_isLoading)
+{
+    <div class="d-flex justify-content-center align-items-center">
+        <MudProgressCircular Size="Size.Medium" Indeterminate="true"/>
+    </div>
+}
+else
+{
+    <MudRTLProvider RightToLeft="true">
+        <MudIconButton Icon="@Icons.Material.Filled.ArrowForward" Color="Color.Dark" Href="/institutions"/>
+        <div class="d-flex justify-content-center align-items-center">
+            <EditForm Model="_model" OnSubmit="@HandleEditGarde" FormName="addInstitutionForm">
+                <MudCard Style="width: 500px" Class="p-4" Elevation="5">
+                    <MudCardHeader>
+                        <MudText Typo="Typo.h4">تعديل مستوى</MudText>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudTextField Label="الإسم" @bind-Value="_model.Name" For="@(() => _model.Name)"
+                                      Class="mb-3"/>
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton ButtonType="ButtonType.Submit" Disabled="_isLoading" Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   Class="ms-auto">
+                            @if (_isLoading)
+                            {
+                                <MudProgressCircular Class="ms-1n" Size="Size.Small" Indeterminate="true"
+                                                     Color="Color.Inherit"/>
+                            }
+                            <MudText>حفظ</MudText>
+                        </MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </EditForm>
+        </div>
+    </MudRTLProvider>
+}
+
+@code {
+    [Parameter] 
+    public int Id { get; set; }
+    private UpsertGradeDto _model = new();
+    private bool _isLoading = false;
+    private bool _isPageLoading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _isPageLoading = true;
+
+        var res = await ApiClient.GetFromJsonAsync<GradesResponseDto>($"/api/grades/{Id}");
+
+        if (res is { Success: true })
+        {
+            _model = res.Grade.Adapt<UpsertGradeDto>();
+        }
+
+        _isPageLoading = false;
+    }
+
+    private async Task HandleEditGarde()
+    {
+        _isLoading = true;
+
+        var res = await ApiClient.PutAsync<GradesResponseDto, 
+            UpsertGradeDto>($"/api/grades/{Id}", _model);
+
+        if (res is { Success: true })
+        {
+            Snackbar.Add(res.Message!, Severity.Success);
+            _isLoading = false;
+            NavManager.NavigateTo($"/grades");
+        }
+        else
+        {
+            Snackbar.Add(res?.Message!, Severity.Error);
+            _isLoading = false;
+        }
+
+        _isLoading = false;
+    }
+}

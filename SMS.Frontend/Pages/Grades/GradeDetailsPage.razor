@@ -1,36 +1,35 @@
-@page "/academic-years/{id:int}"
-@using SMS.Models.DTOs.AcademicYears
-@attribute [Authorize(Roles = "Admin,Registrar")]
+@page "/grades/{id:int}"
+@using SMS.Models.DTOs.Grades
+@attribute [Authorize(Roles = "Admin,Support,Registrar")]
 
 @if (_isLoading)
 {
     <div class="d-flex justify-content-center align-items-center">
         <MudProgressCircular Size="Size.Medium" Indeterminate="true"/>
     </div>
-}
-else if (_yearDetails != null)
+} else if (_gradeDetails != null)
 {
     <MudRTLProvider RightToLeft="true">
-        <MudText Typo="Typo.h4">@_yearDetails.Name</MudText>
+        <MudText Typo="Typo.h4">@_gradeDetails.Name</MudText>
     </MudRTLProvider>
 }
 
 @code {
-    [Parameter]
+    [Parameter] 
     public int Id { get; set; }
 
+    private GradeDetailsDto? _gradeDetails;
     private bool _isLoading = false;
-    private AcademicYearDetailsDto? _yearDetails;
 
     protected override async Task OnInitializedAsync()
     {
         _isLoading = true;
 
-        var res = await ApiClient.GetFromJsonAsync<AcademicYearsResponseDto>($"/api/academic-years/{Id}");
+        var res = await ApiClient.GetFromJsonAsync<GradesResponseDto>($"/api/grades/{Id}");
 
         if (res is { Success: true })
         {
-            _yearDetails = res.AcademicYear;
+            _gradeDetails = res.Grade;
         }
 
         _isLoading = false;

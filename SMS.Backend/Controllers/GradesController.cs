@@ -7,7 +7,7 @@ namespace SMS.Backend.Controllers;
 
 [ApiController]
 [Route("/api/grades")]
-[Authorize(Roles = "Admin,Support")]
+[Authorize(Roles = "Admin,Support,Registrar")]
 public class GradesController(IGradesService service) : ControllerBase
 {
     //Get all grades

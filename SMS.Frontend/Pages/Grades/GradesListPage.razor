@@ -1,0 +1,93 @@
+@page "/grades/"
+@attribute [Authorize(Roles = "Admin,Support,Registrar")]
+@using SMS.Models.DTOs.Grades
+
+@if (_isLoading)
+{
+    <div class="d-flex justify-content-center align-items-center">
+        <MudProgressCircular Size="Size.Medium" Indeterminate="true"/>
+    </div>
+}
+else if (_grades != null)
+{
+    <MudRTLProvider RightToLeft="true">
+        <MudGrid>
+            <MudItem xs="6">
+                <AddGradeView />
+            </MudItem>
+            <MudItem xs="6">
+                <MudTable Items="@_grades" Dense Hover Filter="new Func<GradeDto, bool>(FilterFunc1)" Elevation="4">
+                    <ToolBarContent>
+                        <MudText Typo="Typo.h4">المستويات</MudText>
+                        <MudSpacer/>
+                        <MudTextField @bind-Value="_searchText" Placeholder="بحث بالإسم..."
+                                      Adornment="Adornment.Start"
+                                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium"
+                                      Class="mt-0"></MudTextField>
+                    </ToolBarContent>
+                    <HeaderContent>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<GradeDto, object>(x => x.Name)">
+                                الإسم
+                            </MudTableSortLabel>
+                        </MudTh>
+                        <MudTh></MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd>@context.Name</MudTd>
+                        <MudTd>
+                            <MudFab Size="Size.Small" StartIcon="@Icons.Material.Filled.ReadMore"
+                                    Class="me-1"
+                                    @onclick="@(() => NavManager.NavigateTo($"grades/{context.Id}"))"
+                                    Color="Color.Default"/>
+                            <MudFab Size="Size.Small" StartIcon="@Icons.Material.Filled.Edit"
+                                    Class="me-1"
+                                    @onclick="@(() => NavManager.NavigateTo($"grades/edit/{context.Id}"))"
+                                    Color="Color.Primary"/>
+                            <MudFab Size="Size.Small" StartIcon="@Icons.Material.Filled.Delete"
+                                    Class="me-1"
+                                    @onclick="@(() => NavManager.NavigateTo($"grades/delete/{context.Id}"))"
+                                    Color="Color.Error"/>
+                        </MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager/>
+                    </PagerContent>
+                </MudTable>
+            </MudItem>
+        </MudGrid>
+    </MudRTLProvider>
+}
+
+@code {
+    private List<GradeDto>? _grades;
+    private bool _isLoading = false;
+    private string _searchText = "";
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _isLoading = true;
+
+        var res = await ApiClient.GetFromJsonAsync<GradesResponseDto>("api/grades");
+
+        if (res is { Success: true })
+            _grades = res.Grades;
+
+        _isLoading = false;
+    }
+
+    private bool FilterFunc1(GradeDto element)
+    {
+        return FilterFunc(element, _searchText);
+    }
+
+    private bool FilterFunc(GradeDto element, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (element.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    }
+}
