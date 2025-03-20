@@ -1,0 +1,31 @@
+@page "/teachers/{id:int}"
+@attribute [Authorize(Roles = "Admin,Support,Registrar,Teacher")]
+@using SMS.Models.DTOs.Teachers
+
+<MudRTLProvider RightToLeft="true">
+    <MudText Typo="Typo.h4">@_teacherDetails?.FullName</MudText>
+</MudRTLProvider>
+
+@code {
+    [Parameter] 
+    public int Id { get; set; }
+
+    private TeacherDetailsDto? _teacherDetails;
+
+    private bool _isLoading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _isLoading = true;
+
+        var res = await ApiClient.GetFromJsonAsync<TeachersResponseDto>($"/api/teachers/{Id}");
+
+        if (res is { Success: true })
+        {
+            _teacherDetails = res.Teacher;
+        }
+
+        _isLoading = false;
+    }
+
+}

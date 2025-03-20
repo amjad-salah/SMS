@@ -1,0 +1,137 @@
+@page "/classes/edit/{id:int}"
+@using Mapster
+@using SMS.Models.DTOs.Classes
+@using SMS.Models.DTOs.Grades
+@using SMS.Models.DTOs.Institutions
+@using SMS.Models.DTOs.Teachers
+@attribute [Authorize(Roles = "Admin,Teacher,Support")]
+
+@if (_isPageLoading)
+{
+    <div class="d-flex justify-content-center align-items-center">
+        <MudProgressCircular Size="Size.Medium" Indeterminate="true"/>
+    </div>
+}
+else
+{
+    <MudRTLProvider RightToLeft="true">
+        <MudIconButton Icon="@Icons.Material.Filled.ArrowForward" Color="Color.Dark" Href="/classes"/>
+        <div class="d-flex justify-content-center align-items-center">
+            <EditForm Model="_model" OnSubmit="@HandleEditClass" FormName="addUserForm">
+                <MudCard Style="width: 500px" Class="p-4" Elevation="5">
+                    <MudCardHeader>
+                        <MudText Typo="Typo.h4">تعديل فصل</MudText>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudTextField Label="الإسم" @bind-Value="_model.Name" For="@(() => _model.Name)"
+                                      Class="mb-3"/>
+                        <MudSelect @bind-Value="_model.InstitutionId" Placeholder="إختر المؤسسة"
+                                   Label="المؤسسة" Class="mb-3">
+                            @foreach (var institution in _institutions)
+                            {
+                                <MudSelectItem Value="@institution.Id">@institution.Name</MudSelectItem>
+                            }
+                        </MudSelect>
+                        <MudSelect @bind-Value="_model.GradeId" Placeholder="إختر المستوى"
+                                   Label="المستوى" Class="mb-3">
+                            @foreach (var grade in _grades)
+                            {
+                                <MudSelectItem Value="@grade.Id">@grade.Name</MudSelectItem>
+                            }
+                        </MudSelect>
+                        <MudSelect @bind-Value="_model.TeacherId" Placeholder="إختر الأستاذ المشرف"
+                                   Label="الأستاذ المشرف" Class="mb-3">
+                            @foreach (var teacher in _teachers)
+                            {
+                                <MudSelectItem Value="@teacher.Id">@teacher.FullName</MudSelectItem>
+                            }
+                        </MudSelect>
+                        <MudTextField Label="السعة" @bind-Value="_model.Capacity" For="@(() => _model.Capacity)"
+                                      Class="mb-3"
+                                      InputType="InputType.Number"/>
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton ButtonType="ButtonType.Submit" Disabled="_isLoading" Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   Class="ms-auto">
+                            @if (_isLoading)
+                            {
+                                <MudProgressCircular Class="ms-1n" Size="Size.Small" Indeterminate="true"
+                                                     Color="Color.Inherit"/>
+                            }
+                            <MudText>حفظ</MudText>
+                        </MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </EditForm>
+        </div>
+    </MudRTLProvider>
+}
+
+@code {
+    [Parameter] 
+    public int Id { get; set; }
+    private UpsertClassDto _model = new();
+    private bool _isLoading = false;
+    private bool _isPageLoading = false;
+    private List<InstitutionDto> _institutions = [];
+    private List<GradeDto> _grades = [];
+    private List<TeacherDto> _teachers = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        _isPageLoading = true;
+        
+        var res = await ApiClient.GetFromJsonAsync<ClassesResponseDto>($"/api/classes/{Id}");
+        
+        var resInst = await ApiClient.GetFromJsonAsync<InstitutionsResponseDto>("/api/institutions");
+
+        var resGrade = await ApiClient.GetFromJsonAsync<GradesResponseDto>("/api/grades");
+
+        var resTea = await ApiClient.GetFromJsonAsync<TeachersResponseDto>("/api/teachers");
+
+        if (res is { Success: true })
+        {
+            _model = res.Class.Adapt<UpsertClassDto>();
+        }
+
+        if (resInst is { Success: true })
+        {
+            _institutions = resInst.Institutions!;
+        }
+
+        if (resGrade is { Success: true })
+        {
+            _grades = resGrade.Grades!;
+        }
+
+        if (resTea is { Success: true })
+        {
+            _teachers = resTea.Teachers!;
+        }
+
+        _isPageLoading = false;
+    }
+
+    private async Task HandleEditClass()
+    {
+        _isLoading = true;
+
+        var res = await ApiClient.PutAsync<ClassesResponseDto,
+            UpsertClassDto>($"/api/classes/{Id}", _model);
+
+        if (res is { Success: true })
+        {
+            Snackbar.Add(res.Message!, Severity.Success);
+            _isLoading = false;
+            NavManager.NavigateTo($"/clasees/{res.Class!.Id}");
+        }
+        else
+        {
+            Snackbar.Add(res?.Message!, Severity.Error);
+            _isLoading = false;
+        }
+
+        _isLoading = false;
+    }
+}

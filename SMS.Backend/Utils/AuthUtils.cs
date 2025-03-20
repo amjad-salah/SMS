@@ -47,6 +47,7 @@ public class AuthUtils(IConfiguration config)
         }, out var validatedToken);
 
         var jwtToken = (JwtSecurityToken)validatedToken;
-        return int.Parse(jwtToken.Claims.First(c => c.Type == "NameIdentifier").Value);
+        var userId = jwtToken.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+        return int.Parse(userId);
     }
 }

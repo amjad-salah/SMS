@@ -1,0 +1,36 @@
+@page "/classes/delete/{id:int}"
+@using SMS.Models.DTOs.Classes
+@attribute [Authorize(Roles = "Admin,Teacher,Support")]
+
+<div class="mt-20 d-flex justify-content-center align-items-center">
+    <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined" ContentAlignment="HorizontalAlignment.Center">
+        <MudText Typo="Typo.h6" Class="mb-10">هل تريد مسح هذ الفصل؟</MudText>
+        <MudButton Color="Color.Error" Variant="Variant.Filled" Class="me-5" Disabled="_isLoading" @onclick="HandleDeleteClass">نعم</MudButton>
+        <MudButton Color="Color.Success" Variant="Variant.Filled" Href="/classes">لا</MudButton>
+    </MudAlert>
+</div>
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private bool _isLoading = false;
+    
+    private async Task HandleDeleteClass()
+    {
+        _isLoading = true;
+        
+        var res = await ApiClient.DeleteAsync<ClassesResponseDto>($"/api/classes/{Id}");
+        
+        if (res is { Success: true })
+        {
+            Snackbar.Add(res.Message!, Severity.Info);
+            _isLoading = false;
+            NavManager.NavigateTo("/classes");
+        }
+        else
+        {
+            _isLoading = false;
+            Snackbar.Add(res?.Message!, Severity.Error);
+        }
+    }
+}
