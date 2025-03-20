@@ -13,7 +13,7 @@ public class UpsertSubjectValidation : AbstractValidator<UpsertSubjectDto>
     {
         _context = context;
 
-        RuleFor(s => s.Name).Empty().WithMessage("Name is required.")
+        RuleFor(s => s.Name).NotEmpty().WithMessage("Name is required.")
             .MaximumLength(100).WithMessage("Name must not exceed 100 characters.");
         RuleFor(s => s.GradeId).NotEqual(0).WithMessage("Grade Id is required.")
             .MustAsync(async (id, cancellation) =>

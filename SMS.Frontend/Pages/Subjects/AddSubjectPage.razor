@@ -1,0 +1,92 @@
+@page "/subjects/add"
+@using SMS.Models.DTOs.Grades
+@using SMS.Models.DTOs.Subjects
+@attribute [Authorize]
+@if (_isPageLoading)
+{
+    <div class="d-flex justify-content-center align-items-center">
+        <MudProgressCircular Size="Size.Medium" Indeterminate="true"/>
+    </div>
+}
+else
+{
+    <MudRTLProvider RightToLeft="true">
+    <MudIconButton Icon="@Icons.Material.Filled.ArrowForward" Color="Color.Dark" Href="/teachers"/>
+    <div class="d-flex justify-content-center align-items-center">
+        <EditForm Model="_model" OnSubmit="@HandleAddSubject" FormName="addInstitutionForm">
+            <MudCard Style="width: 500px" Class="p-4" Elevation="5">
+                <MudCardHeader>
+                    <MudText Typo="Typo.h4">إضافة مادة</MudText>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudTextField Label="الإسم" @bind-Value="_model.Name" For="@(() => _model.Name)"
+                                  Class="mb-3"/>
+                    <MudSelect @bind-Value="_model.GradeId" Placeholder="إختر المستوى"
+                               Label="المستوى" Class="mb-3">
+                        @foreach (var grade in _grades)
+                        {
+                            <MudSelectItem Value="@grade.Id">@grade.Name</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Disabled="_isLoading" Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               Class="ms-auto">
+                        @if (_isLoading)
+                        {
+                            <MudProgressCircular Class="ms-1n" Size="Size.Small" Indeterminate="true"
+                                                 Color="Color.Inherit"/>
+                        }
+                        <MudText>حفظ</MudText>
+                    </MudButton>
+                </MudCardActions>
+            </MudCard>
+        </EditForm>
+    </div>
+</MudRTLProvider>
+}
+
+@code {
+    private UpsertSubjectDto _model = new();
+    private bool _isLoading = false;
+    private bool _isPageLoading = false;
+    private List<GradeDto> _grades = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        _isPageLoading = true;
+        
+        var res = await ApiClient.GetFromJsonAsync<GradesResponseDto>("/api/grades");
+
+        if (res is { Success: true })
+        {
+            _grades = res.Grades!;
+        }
+
+        _isPageLoading = false;
+    }
+
+    private async Task HandleAddSubject()
+    {
+        _isLoading = true;
+        
+        var res = await ApiClient.PostAsync<SubjectsResponseDto,
+            UpsertSubjectDto>("/api/subjects", _model);
+
+        if (res is { Success: true })
+        {
+            Snackbar.Add(res.Message!, Severity.Success);
+            _isLoading = false;
+            NavManager.NavigateTo("/subjects");
+        }
+        else
+        {
+            Snackbar.Add(res!.Message!, Severity.Error);
+            _isLoading = false;
+        }
+
+        _isLoading = false;
+    }
+
+}

@@ -1,0 +1,32 @@
+@page "/subjects/{id:int}"
+@using SMS.Models.DTOs.Subjects
+@attribute [Authorize]
+
+<MudRTLProvider RightToLeft="true">
+    <MudText Typo="Typo.h4">@_subjectDetails?.Name</MudText>
+</MudRTLProvider>
+
+@code {
+    [Parameter] 
+    public int Id { get; set; }
+
+    private SubjectDetailsDto? _subjectDetails;
+    private bool _isLoading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _isLoading = true;
+
+        var res = await ApiClient.GetFromJsonAsync<SubjectsResponseDto>($"/api/subjects/{Id}");
+
+        if (res is { Success: true })
+        {
+            _subjectDetails = res.Subject;
+        }
+
+        _isLoading = false;
+    }
+
+}
+
+@* TODO:  *@
