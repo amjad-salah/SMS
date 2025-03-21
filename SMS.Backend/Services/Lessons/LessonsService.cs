@@ -83,8 +83,8 @@ public class LessonsService(
         }
 
         existLesson.Day = lesson.Day;
-        existLesson.StartTime = lesson.StartTime;
-        existLesson.EndTime = lesson.EndTime;
+        existLesson.StartTime = lesson.StartTime ?? TimeSpan.Zero;
+        existLesson.EndTime = lesson.EndTime ??  TimeSpan.Zero;
         existLesson.SubjectId = lesson.SubjectId;
         existLesson.TeacherId = lesson.TeacherId;
         existLesson.ClassId = lesson.ClassId;

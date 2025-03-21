@@ -1,0 +1,138 @@
+@page "/lessons/edit/{id:int}"
+@using Mapster
+@using SMS.Models.DTOs.Classes
+@using SMS.Models.DTOs.Lessons
+@using SMS.Models.DTOs.Subjects
+@using SMS.Models.DTOs.Teachers
+@attribute [Authorize(Roles = "Admin,Teacher,Support")]
+
+@if (_isPageLoading)
+{
+    <div class="d-flex justify-content-center align-items-center">
+        <MudProgressCircular Size="Size.Medium" Indeterminate="true"/>
+    </div>
+}
+else
+{
+   <MudRTLProvider RightToLeft="true">
+        <MudIconButton Icon="@Icons.Material.Filled.ArrowForward" Color="Color.Dark" Href="/lessons"/>
+        <div class="d-flex justify-content-center align-items-center">
+            <EditForm Model="_model" OnSubmit="@HandleAddLesson" FormName="addUserForm">
+                <MudCard Style="width: 500px" Class="p-4">
+                    <MudCardHeader>
+                        <MudText Typo="Typo.h4">تعديل حصة</MudText>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudSelect @bind-Value="_model.Day" Placeholder="إختر اليوم"
+                                   Label="اليوم" Class="mb-3">
+                            @foreach (DayOfWeek day in Enum.GetValues(typeof(DayOfWeek)))
+                            {
+                                <MudSelectItem Value="@day">@day</MudSelectItem>
+                            }
+                        </MudSelect>
+                        <MudSelect @bind-Value="_model.SubjectId" Placeholder="إختر المادة"
+                                   Label="المادة" Class="mb-3">
+                            @foreach (var subject in _subjects)
+                            {
+                                <MudSelectItem Value="@subject.Id">@subject.Name</MudSelectItem>
+                            }
+                        </MudSelect>
+                        <MudSelect @bind-Value="_model.ClassId" Placeholder="إختر الفصل"
+                                   Label="الفصل" Class="mb-3">
+                            @foreach (var classDto in _classes)
+                            {
+                                <MudSelectItem Value="@classDto.Id">@classDto.Name</MudSelectItem>
+                            }
+                        </MudSelect>
+                        <MudSelect @bind-Value="_model.TeacherId" Placeholder="إختر الأستاذ"
+                                   Label="الأستاذ" Class="mb-3">
+                            @foreach (var teacher in _teachers)
+                            {
+                                <MudSelectItem Value="@teacher.Id">@teacher.FullName</MudSelectItem>
+                            }
+                        </MudSelect>
+                        <MudTimePicker Label="زمن البداية" @bind-Time="_model.StartTime" Class="mb-3" />
+                        <MudTimePicker Label="زمن النهاية" @bind-Time="_model.EndTime" Class="mb-3" />
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton ButtonType="ButtonType.Submit" Disabled="_isLoading" Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   Class="ms-auto">
+                            @if (_isLoading)
+                            {
+                                <MudProgressCircular Class="ms-1n" Size="Size.Small" Indeterminate="true"
+                                                     Color="Color.Inherit"/>
+                            }
+                            <MudText>حفظ</MudText>
+                        </MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </EditForm>
+        </div>
+    </MudRTLProvider> 
+}
+
+@code {
+    [Parameter] 
+    public int Id { get; set; }
+    private UpsertLessonDto _model = new();
+    private bool _isLoading = false;
+    private bool _isPageLoading = false;
+    private List<SubjectDto> _subjects = [];
+    private List<ClassDto> _classes = [];
+    private List<TeacherDto> _teachers = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        _isPageLoading = true;
+        
+        var res = await ApiClient.GetFromJsonAsync<LessonsResponseDto>($"/api/lessons/{Id}");
+
+        if (res is { Success: true })
+        {
+            _model = res.Lesson.Adapt<UpsertLessonDto>();
+        }
+        
+        var resSubj = await ApiClient.GetFromJsonAsync<SubjectsResponseDto>("/api/subjects");
+        var resCla = await ApiClient.GetFromJsonAsync<ClassesResponseDto>("/api/classes");
+        var resTea = await ApiClient.GetFromJsonAsync<TeachersResponseDto>("/api/teachers");
+
+        if (resSubj is { Success: true })
+        {
+            _subjects = resSubj.Subjects!;
+        }
+
+        if (resCla is { Success: true })
+        {
+            _classes = resCla.Classes!;
+        }
+
+        if (resTea is { Success: true })
+        {
+            _teachers = resTea.Teachers!;
+        }
+
+        _isPageLoading = false;
+    }
+
+    private async Task HandleAddLesson()
+    {
+        _isLoading = true;
+
+        var res = await ApiClient.PutAsync<LessonsResponseDto, 
+            UpsertLessonDto>($"/api/lessons/{Id}", _model);
+
+        if (res is { Success: true })
+        {
+            Snackbar.Add(res.Message!, Severity.Success);
+            _isLoading = false;
+            NavManager.NavigateTo("/lessons");
+        }
+        else
+        {
+            Snackbar.Add(res!.Message!, Severity.Error);
+        }
+
+        _isLoading = false;
+    }
+}

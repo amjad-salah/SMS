@@ -6,8 +6,8 @@ namespace SMS.Models.Entities;
 public class Lesson : BaseEntity
 {
     [Column("day")] public DayOfWeek Day { get; set; }
-    [Column("start_time")] public TimeOnly StartTime { get; set; }
-    [Column("end_time")] public TimeOnly EndTime { get; set; }
+    [Column("start_time")] public TimeSpan StartTime { get; set; }
+    [Column("end_time")] public TimeSpan EndTime { get; set; }
     [Column("subject_id")] public int SubjectId { get; set; }
     [ForeignKey(nameof(SubjectId))] public virtual Subject? Subject { get; set; }
     [Column("class_id")] public int ClassId { get; set; }

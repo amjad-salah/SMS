@@ -8,8 +8,8 @@ public class LessonDto
 {
     public int Id { get; set; }
     public DayOfWeek Day { get; set; }
-    public TimeOnly StartTime { get; set; }
-    public TimeOnly EndTime { get; set; }
+    public TimeSpan StartTime { get; set; }
+    public TimeSpan EndTime { get; set; }
     public int SubjectId { get; set; }
     public int ClassId { get; set; }
     public virtual ClassDto? Class { get; set; }
